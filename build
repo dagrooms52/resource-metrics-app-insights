@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# Uncomment to trace script for debugging
+#set -o xtrace
+
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+__base="$(basename ${__file} .sh)"
+
+opt1="${1:-}"
+arg1="${2:-}"
+
+ARM_DOCKERFILE="$__dir/Dockerfile.arm"
+X86_DOCKERFILE="$__dir/Dockerfile.x86"
+DOCKERFILE_OUTPUT="$__dir/Dockerfile"
+
+USAGE="Usage: [--architecture | -a] ARCHITECTURE (x86/arm)"
+ARCHITECTURE=""
+
+if [[ -e "$DOCKERFILE_OUTPUT" ]]; then
+    echo "Dockerfile already exists at $DOCKERFILE_OUTPUT. Delete this Dockerfile and try again."
+    exit 1
+fi
+
+if [[ "$opt1" = "" ]] || [[ "$arg1" = "" ]]; then
+    echo $USAGE
+    exit 1
+fi
+
+if [[ "$opt1" = "-a" ]] || [[ "$opt1" = "--architecture" ]]; then
+    ARG1_LOWER=$(echo "$arg1" | awk '{print tolower($0)}')
+    
+    if [[ "$ARG1_LOWER" = "x86" ]]; then
+        ARCHITECTURE="x86"
+    elif [[ "$ARG1_LOWER" = "arm" ]]; then
+        ARCHITECTURE="arm"
+    else
+        echo $USAGE
+        exit 1
+    fi
+else
+    echo $USAGE
+    exit 1
+fi
+
+if [[ "$ARCHITECTURE" = "x86" ]]; then
+    cp $X86_DOCKERFILE $DOCKERFILE_OUTPUT
+    docker build -t resource-metrics-app-insights .
+    rm $DOCKERFILE_OUTPUT
+elif [[ "$ARCHITECTURE" = "arm" ]]; then
+    cp $ARM_DOCKERFILE $DOCKERFILE_OUTPUT
+    docker build -t resource-metrics-app-insights-arm .
+    rm $DOCKERFILE_OUTPUT
+fi

@@ -1,0 +1,19 @@
+# Compute resource metrics on a regular interval and
+# report the metrics to Application Insights
+
+FROM python:3.6.2-slim
+
+LABEL maintainer="Daniel Grooms, daniel.grooms@careotter.com"
+
+WORKDIR /app
+
+# Need gcc for psutil
+RUN apt-get update -qq && apt-get install -y gcc && \
+    pip install applicationinsights psutil
+
+COPY ./src/ ./
+
+# Usually you should map "/proc" to "/host/proc" and "/" to "/host/dir"
+VOLUME [ "/host/proc", "/host/dir" ]
+
+ENTRYPOINT [ "python", "./program.py" ]
