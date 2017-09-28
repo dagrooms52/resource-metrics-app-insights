@@ -3,7 +3,7 @@
 
 FROM python:3.6.2-slim
 
-LABEL maintainer="Daniel Grooms, daniel.grooms@careotter.com"
+LABEL maintainer="Daniel Grooms, dagrooms252@gmail.com"
 
 WORKDIR /app
 

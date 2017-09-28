@@ -3,7 +3,7 @@
 
 FROM resin/raspberrypi3-python:3.6-wheezy
 
-LABEL maintainer="Daniel Grooms, daniel.grooms@careotter.com"
+LABEL maintainer="Daniel Grooms, dagrooms252@gmail.com"
 
 WORKDIR /app
 
